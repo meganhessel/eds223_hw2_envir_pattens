@@ -1,6 +1,8 @@
-# **EDS 223 Homework Assignment 2**
+# **EDS 223**: Exploring Patterns of Environmental (in)justice
 
-Exploring patterns of environmental justice
+### **Los Angeles**, CA Redlining and Bird Observations
+
+------------------------------------------------------------------------
 
 ### PURPOSE
 
@@ -15,6 +17,30 @@ The homework's content was examining redlining in Los Angeles, CA by diving into
 -   "docs" - Contains the qmd's pdf and html files
 
 -   qmd - Located in the root and has the data cleaning and visualizations
+
+#### File tree
+
+docs/
+
+├── eds223_hw2.html
+
+└── eds223_hw2.pdf
+
+eds223_hw2_files/
+
+├── figure-html/
+
+└── libs/
+
+.gitignore
+
+eds223_hw2_envir_pattens.Rproj
+
+eds223_hw2.qmd
+
+README.md
+
+Scratchwork.R
 
 ### DATA ACCESS
 
@@ -34,4 +60,12 @@ Data information:
 
 AUTHOR: Megan Hessel (MEDS 2026)
 
-REFERENCES & ACKNOWLEDGMENETS: I would like to thank Dr. Annie Adams and Ale Vidal Meza for helping in the creation and development of this project.
+REFERENCES:
+
+EJSCREEN data is from the United States Environmental Protection Agency’s former EJScreen: Environmental Justice Screening and Mapping Tool
+
+Nelson R. (2023). Download the Data. *Mapping Inequality Redlining New Deal America.* <https://dsl.richmond.edu/panorama/redlining/data>.
+
+Cornell Lab of Ornithology. (2025). EOD – eBird Observation Dataset. *Global Biodiversity Information Facility.* <https://www.gbif.org/dataset/4fa7b334-ce0d-4e88-aaae-2e0c138d049e>.
+
+ACKNOWLEDGMENETS: I would like to thank Dr. Annie Adams and Ale Vidal Meza for helping in the creation and development of this project.

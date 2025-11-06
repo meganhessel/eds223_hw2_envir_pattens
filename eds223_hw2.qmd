@@ -8,9 +8,9 @@ format:
 editor: visual
 ---
 
-# EDS 223: Homework 2
+# EDS 223: Exploring Patterns of Environmental Justice
 
-### Exploring Patterns of Environmental Justice
+### **Los Angeles**, CA Redlining and Bird Observations
 
 ------------------------------------------------------------------------
 
@@ -27,6 +27,7 @@ library(spData)
 library(paletteer)
 library(patchwork)
 library(knitr)
+library(testthat)
 ```
 
 ```{r}
@@ -128,34 +129,25 @@ tm_shape(ineq, is.main = TRUE) +
   tm_polygons(
     fill = 'grade',
     title = "HOLC Grade",
-    palette = c("#05c6ed", "#66CD00", "#fca608", "red") # Tried to make colors consistent for the entire project: A = good = cooler colors; D = bad = reds) 
+    palette = c("#6CCC4B", "#67C9D5", "#F5F52F", "#D9838D") # Tried to make colors consistent for the entire project: A = good = cooler colors; D = bad = reds) 
   ) +
   tm_basemap("Esri.OceanBasemap") +
   tm_title("Home Owners Loan Corporation (HOLC) Redlining") +
-  tm_compass(position = c("right", "bottom")) +
-  tm_scalebar()
-
-
-# Historical redlining Map in correlation to people of color
-# **** This is not neccessary for the hw, but I was interested!!!**** 
-tm_shape(CA_LA) +
-  tm_polygons(fill = 'PEOPCOLORPCT',
-              fill.legend = tm_legend(title = "People of Color (%)")) +
-  tm_shape(ineq, is.main = TRUE) +
-  tm_polygons(
-    fill = 'grade',
-    title = "HOLC Grade",
-    palette = c("#66CD00", "yellow2", "#FFA500", "red"),
-    alpha = 0.5
-  ) +
-  tm_basemap("CartoDB.PositronNoLabels") +
-  tm_title(
-    "Home Owners Loan Corporation (HOLC) Redlining\nOverlayed with People of Color Populations"
-  ) +
-  tm_compass(position = c("right", "bottom")) +
-  tm_scalebar()
+  tm_scalebar(position = c("right", "top")) + 
+  tm_compass(position = c("left", "bottom")) + 
+  tm_credits("Grade A: 'best' areas (safe, most desirable)\nGrade B: 'Still Desirable' areas\nGrade C: 'Definitely Declining' areas\nGrade D: 'Hazardous' areas", size = 0.5)
 
 ```
+
+#### Grade Meanings 
+
+-   Grade A: safe, most desirable, 'best' areas
+
+-   Grade B: 'Still Desirable' areas
+
+-   Grade C: 'Definitely Declining' areas
+
+-   Grade D: 'Hazardous' areas
 
 ### Summary Tables
 
@@ -230,10 +222,12 @@ ggplot(sum_table, aes(x = "", y = grade_perc, fill = grade)) +
             position = position_stack(vjust = 0.5),
             size = 3) +
   coord_polar(theta = "y") +
-  scale_fill_manual(values = paletteer_d("ltc::fernande", direction = -1)) +
+  scale_fill_manual(values = c("#6CCC4B", "#65C6D1", "#F0E06E", "#D9838D")) +
   theme_minimal() +
-  labs(y = "Percentages of Census Block Groups per HOLC Grade", 
-       fill = "HOLC Grades")
+  labs(y = "Percentages of Census Block Groups per HOLC Grade\nin Los Angeles, CA", 
+       fill = "HOLC Grades", 
+       caption = "Grade A: 'Best' areas\nGrade B: 'Still Desirable' areas\nGrade C: 'Definitely Declining' areas\nGrade D: 'Hazardous' areas") + 
+  theme(plot.caption = element_text(size = 7))
 
 ```
 
@@ -321,7 +315,7 @@ CA_holc <- tm_shape(CA_LA) + # Wanted to outline LA blocks for easy comparsion
     lwd = 0.6,
     fill = 'grade',
     fill.legend = tm_legend(title = "HOLC Grades"), 
-    fill.scale = tm_scale(values = c("#05c6ed", "#66CD00","#fca608","red"))
+    fill.scale = tm_scale(values = c("#6CCC4B", "#67C9D5", "#F5F52F", "#D9838D"))
     ) + 
 tm_basemap("Esri.OceanBasemap") +
 tm_title(text = "Home Owners Loan Corporation (HOLC) Grades") + 
@@ -381,17 +375,18 @@ tmap_arrange(CA_holc, CA_lowincome, CA_lifeexp, CA_pm25)
 # FIGURE 2: Boxplot 
 
 # Boxplot 
-ggplot(sub_long, aes(x = grade, y = values, fill = means)) + # Using pivoted df with ALL values  
+ggplot(sub_long, aes(x = grade, y = values, fill = grade)) + # Using pivoted df with ALL values  
   geom_boxplot(stat = "boxplot") +
   facet_wrap( ~ means) +
-  scale_fill_manual(
-    values = paletteer_d("ltc::fernande")) + 
-  theme_minimal() + 
-  theme(panel.spacing = unit(1.5, "lines")) + 
-  labs(title = "Average Current Conditions within the HOLC Grades",
+  scale_fill_manual(values = c("#6CCC4B", "#69D1DE", "#F0E06E", "#ED919B")) + 
+  theme_grey() + 
+  theme(panel.spacing = unit(1.5, "lines"), 
+        plot.caption = element_text(size = 7)) + 
+  labs(title = "Average Current Conditions within the HOLC Grades in Los Angeles, CA",
        x = "HOLC Grades",
        y = "Percentiles",
-       fill = "Current Conditions")
+       fill = "HOLC Grades", 
+       caption = "Grade A: 'Best' areas\nGrade B: 'Still Desirable' areas\nGrade C: 'Definitely Declining' areas\nGrade D: 'Hazardous' areas")
 
 ```
 
@@ -403,7 +398,7 @@ ggplot(sub_long, aes(x = grade, y = values, fill = means)) + # Using pivoted df 
 # Figure 3: Barchart 
 
 # Ggplot with  all conditions
-ggplot(summary_long, aes(y = values, x = grade, fill = means)) + # Using pivoted df of avg of the values  
+ggplot(summary_long, aes(y = values, x = grade, fill = grade)) + # Using pivoted df of avg of the values  
   geom_bar(col = "black", position = "dodge", stat = "identity") +
   scale_fill_manual(
     labels = c(
@@ -411,13 +406,15 @@ ggplot(summary_long, aes(y = values, x = grade, fill = means)) + # Using pivoted
       "lexp_mean" = "Low Life Expentency",
       "pm2.5_mean" = "PM2.5"
       ),
-    values = paletteer_d("ltc::fernande")
-    ) +
-  labs(title = "Average Current Conditions within the HOLC Grades",
+    values = c("#6CCC4B", "#65C6D1", "#F0E06E", "#D9838D")) +
+  labs(title = "Average Current Conditions within the HOLC Grades in Los Angeles, CA",
        x = "HOLC Grades",
        y = "Percentiles",
-       fill = "Current Conditions") +
-  theme_grey(base_family = "sans")
+       fill = "HOLC Grades", 
+       caption = "Grade A: 'Best' areas\nGrade B: 'Still Desirable' areas\nGrade C: 'Definitely Declining' areas\nGrade D: 'Hazardous' areas") +
+  theme_grey(base_family = "sans") + 
+  facet_wrap(~means) + 
+  theme(plot.caption = element_text(size = 7))
 
 
 ```
@@ -522,12 +519,13 @@ ggplot(bird_by_grade,
        aes(x = grade, 
            y = perc_grade, 
            fill = grade)) + 
-  geom_col() + 
-  labs(title = "Percent Bird Observations per HOLC Grade", 
+  geom_col(color = "black") + 
+  labs(title = "Percent Bird Observations per HOLC Grade in Los Angeles, CA", 
        x = "HOLC Grade", 
-       y = "Percentage of Bird Observations") + 
-  scale_fill_manual(
-    values = paletteer_d("ltc::fernande", direction = -1))
+       y = "Percentage of Bird Observations", 
+       fill = "HOLC Grade", 
+       caption = "Grade A: 'Best' areas\nGrade B: 'Still Desirable' areas\nGrade C: 'Definitely Declining' areas\nGrade D: 'Hazardous' areas") + 
+  scale_fill_manual(values = c("#6CCC4B", "#67C9D5", "#F0E06E", "#D9838D"))
 
 ```
 
